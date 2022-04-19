@@ -23,13 +23,13 @@ export interface TableColumn {
   title: string
   key: string
   render?: (param: {
-    text: string
+    text: any
     record: Record<string, unknown>
     index: number
     column: TableColumn
   }) => JSX.Element | string
   customRender?: (param: {
-    text: string
+    text: any
     record: Record<string, unknown>
     index: number
     column: TableColumn

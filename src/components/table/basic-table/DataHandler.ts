@@ -110,7 +110,6 @@ export default class DataHandler {
    * @returns tableData 返回直接提供给表格的数据
    */
   dataTranslate(data: any) {
-    console.log(data)
     return data
   }
 
@@ -129,11 +128,14 @@ export default class DataHandler {
     this.eventEmitter._dataWillLoad(objectService)
 
     try {
-      const { data, loading, mutate, error } = useRequest(objectService)
-      this.data = mutate(this.dataTranslate(data.value))
-      this.eventEmitter._dataLoaded(this.data.value)
+      const { data, loading, error } = useRequest(objectService)
+      console.log(data)
+      this.data = data
+      this.eventEmitter._dataLoaded(this.data?.value)
       this.loading = loading
+      console.log(2)
       this.error = error
+      console.log(3)
     } catch {
       console.error('表格数据获取失败,请检查service配置!')
     }

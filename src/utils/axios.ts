@@ -16,18 +16,18 @@ const VueAxios = {
 
     Vue.axios = instance
 
-    Object.defineProperties(Vue.prototype, {
-      axios: {
-        get: function get() {
-          return instance
-        },
-      },
-      $http: {
-        get: function get() {
-          return instance
-        },
-      },
-    })
+    // Object.defineProperties(Vue.prototype, {
+    //   axios: {
+    //     get: function get() {
+    //       return instance
+    //     },
+    //   },
+    //   $http: {
+    //     get: function get() {
+    //       return instance
+    //     },
+    //   },
+    // })
   },
 }
 
