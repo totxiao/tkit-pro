@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash'
+import { TableColumn, TableOptions } from './table'
 
 /**
  * 自定义的表格参数

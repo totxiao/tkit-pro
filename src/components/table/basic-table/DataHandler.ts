@@ -25,15 +25,50 @@ export default class DataHandler {
 
     // 用户主动传递数据则直接使用,否则调用接口
     if (!this.data) {
-      this.getData()
+      this.fetchData()
     }
   }
 
   /**
-   * 通过service获取数据
-   * @returns void
+   * 获取表格数据
+   * @returns data
    */
-  getData(params?: any) {
+  getTableData() {
+    return this.data
+  }
+
+  /**
+   * 获取数据加载状态
+   * @returns loading
+   */
+  getTableLoading() {
+    return this.loading
+  }
+
+  /**
+   * 获取数据加载异常
+   * @returns error
+   */
+  getTableError() {
+    return this.error
+  }
+
+  /**
+   * 清空表格数据
+   */
+  clearTable() {
+    this.data = undefined
+    this.loading = undefined
+    this.error = undefined
+    this.eventEmitter._dataClear()
+  }
+
+  /**
+   * service生成器
+   * @param params 可能存在的参数
+   * @returns 返回service请求的promise
+   */
+  generateService(params?: any) {
     if (!this.service) {
       console.error('请配置service!')
       return
@@ -66,6 +101,31 @@ export default class DataHandler {
       }
     }
 
+    return objectService
+  }
+
+  /**
+   * 数据格式转换器
+   * @param data 获取到的原始数据
+   * @returns tableData 返回直接提供给表格的数据
+   */
+  dataTranslate(data: any) {
+    console.log(data)
+    return data
+  }
+
+  /**
+   * 通过service获取数据
+   * @returns void
+   */
+  fetchData(params?: any) {
+    const objectService = this.generateService(params)
+
+    if (objectService === undefined) {
+      return
+    }
+
+    //抛出 data-will-loading事件通知
     this.eventEmitter._dataWillLoad(objectService)
 
     try {
@@ -77,10 +137,5 @@ export default class DataHandler {
     } catch {
       console.error('表格数据获取失败,请检查service配置!')
     }
-  }
-
-  dataTranslate(data: any) {
-    console.log(data)
-    return data
   }
 }

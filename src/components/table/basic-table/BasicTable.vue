@@ -17,11 +17,9 @@ export default defineComponent({
 
     const _tableOptions = ref(optionsHandler(props.options))
 
-    let _dataHandler
+    let _dataHandler = new DataHandler(props.options, _eventEmitter)
 
     onMounted(() => {
-      _dataHandler = new DataHandler(props.options, _eventEmitter)
-
       _eventEmitter._tableInited()
     })
     watch(
@@ -42,14 +40,19 @@ export default defineComponent({
       _eventEmitter,
     })
 
+    const { data, loading } = _dataHandler
+
     return {
       _tableOptions,
+      _dataHandler,
+      data,
+      loading,
     }
   },
 })
 </script>
 <template>
-  <a-table v-bind="_tableOptions"></a-table>
+  <a-table v-bind="_tableOptions" :data-source="data" :loading="loading"></a-table>
 </template>
 
 <style scoped></style>

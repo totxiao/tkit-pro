@@ -43,4 +43,12 @@ export default class EventEmitter {
     console.log('_dataLoaded')
     this.ctx.emit('_dataLoaded', data)
   }
+
+  /**
+   * 清空数据后执行
+   */
+  _dataClear() {
+    console.log('_dataClear')
+    this.ctx.emit('_dataClear')
+  }
 }
