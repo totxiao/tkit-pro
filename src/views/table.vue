@@ -50,9 +50,16 @@ const options: Ref<TableOptions> = ref({
     },
   ],
 })
+
+const table = ref()
+
+const refreshTable = () => {
+  table.value.fetchData()
+}
 </script>
 <template>
-  <basic-table :options="options"></basic-table>
+  <a-button type="primary" @click="refreshTable">refreshTable</a-button>
+  <basic-table ref="table" :options="options"></basic-table>
 </template>
 
 <style scoped></style>

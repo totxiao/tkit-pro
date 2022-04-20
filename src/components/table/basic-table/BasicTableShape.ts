@@ -23,7 +23,7 @@ enum CUSTOM_OPTIONS {
  * @returns columns 将返回 columns处理后的columns
  */
 function columnHandler(columns: TableColumn[]) {
-  columns.forEach((col) => {
+  const finalColumns = columns.map((col) => {
     const current = { ...col, dataIndex: col.key }
 
     // render函数赋值
@@ -35,8 +35,9 @@ function columnHandler(columns: TableColumn[]) {
         delete current.render
       }
     }
+    return current
   })
-  return columns
+  return finalColumns
 }
 
 /**

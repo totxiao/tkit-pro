@@ -13,7 +13,7 @@ export default defineComponent({
     },
   },
   setup(props: Record<string, any>, context) {
-    console.log('setup')
+    console.log('setup1')
     const _eventEmitter = new EventEmitter(context)
 
     const _tableOptions = ref(optionsHandler(props.options))
@@ -21,14 +21,14 @@ export default defineComponent({
     let _dataHandler = new DataHandler(props.options, _eventEmitter)
 
     onMounted(() => {
-      console.log('init1')
-      _dataHandler
+      // 抛出 table-inited 事件
       _eventEmitter._tableInited()
     })
     watch(
       () => props.options,
       (newOptions) => {
         _tableOptions.value = optionsHandler(newOptions)
+        _dataHandler = new DataHandler(props.options, _eventEmitter)
       },
       {
         deep: true,
@@ -37,10 +37,15 @@ export default defineComponent({
 
     const { expose } = context
 
+    //暴露给外部的方法
     expose({
+      fetchData: _dataHandler.fetchData.bind(_dataHandler),
+      getTableData: _dataHandler.getTableData.bind(_dataHandler),
+      getTableLoading: _dataHandler.getTableLoading.bind(_dataHandler),
+      getTableError: _dataHandler.getTableError.bind(_dataHandler),
+      clearTable: _dataHandler.clearTable.bind(_dataHandler),
       _tableOptions,
       _dataHandler,
-      _eventEmitter,
     })
 
     const { data, loading } = _dataHandler

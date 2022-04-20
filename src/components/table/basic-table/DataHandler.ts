@@ -13,7 +13,7 @@ export default class DataHandler {
   service: TableOptions['service']
   filters?: object
   eventEmitter: EventEmitter
-  run: (() => void) | undefined
+  objectService?: () => Promise<any>
   loading: Ref<boolean> | undefined
   error?: Ref<Error | undefined>
 
@@ -101,7 +101,7 @@ export default class DataHandler {
       }
     }
 
-    return objectService
+    this.objectService = objectService
   }
 
   /**
@@ -109,7 +109,7 @@ export default class DataHandler {
    * @param data 获取到的原始数据
    * @returns tableData 返回直接提供给表格的数据
    */
-  dataTranslate(data: any) {
+  dataTranslation(data: any) {
     return data
   }
 
@@ -118,7 +118,11 @@ export default class DataHandler {
    * @returns void
    */
   fetchData(params?: any) {
-    const objectService = this.generateService(params)
+    if (!this.objectService) {
+      this.generateService(params)
+    }
+
+    const { objectService } = this
 
     if (objectService === undefined) {
       return
@@ -129,13 +133,12 @@ export default class DataHandler {
 
     try {
       const { data, loading, error } = useRequest(objectService)
-      console.log(data)
-      this.data = data
-      this.eventEmitter._dataLoaded(this.data?.value)
+      this.data = this.dataTranslation(data)
       this.loading = loading
-      console.log(2)
       this.error = error
-      console.log(3)
+
+      // 抛出 data-loaded 事件
+      this.eventEmitter._dataLoaded(this.data?.value)
     } catch {
       console.error('表格数据获取失败,请检查service配置!')
     }

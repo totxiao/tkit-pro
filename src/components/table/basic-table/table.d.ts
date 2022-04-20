@@ -1,6 +1,19 @@
 import { Method } from 'axios'
+import { Ref } from 'vue'
+import DataHandler from './DataHandler'
 
 export const CompType: 'text' | 'select'
+
+export interface BasicTable {
+  fetchData: () => void
+  getTableData: () => any
+  getTableLoading: () => Ref<boolean>
+  getTableError: () => Error
+  clearTable: () => void
+  _tableOptions: TableOptions
+  _dataHandler: DataHandler
+  [key: string]: any
+}
 
 export interface TableOptions {
   columns: TableColumn[]

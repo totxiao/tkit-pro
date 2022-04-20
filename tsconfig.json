@@ -9,6 +9,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "allowJs":true,
     // 使ts项目中可以通过别名依赖(ps:vite.config.ts的alias配置似乎并不能穿透到ts文件中)
     "baseUrl": "./",
     "paths": {

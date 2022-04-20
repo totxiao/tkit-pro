@@ -47,10 +47,9 @@ const errorHandler = (error: any) => {
 
 // request interceptor
 request.interceptors.request.use((config: any) => {
-  console.log('in')
   // const token = storage.get(ACCESS_TOKEN)
   const token =
-    'eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6IjUzMjgwZGQ5LTBhOGYtNGNmMS04Y2ZjLTE3MjY1MjdmNGYwYiJ9.NP59RwK5HpxI_tLl5BAY7XlEKqLc37rMirBiS4NWNPq7HptXHDGSipp9O5eVJkSRfFxQsitP_CHGJ62mZiemIA'
+    'eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6Ijc2OTczMWVhLTQ1MTctNDg3Zi1hZjJmLWIxOTM2MGUzMTNiYiJ9.HYiQ-DHHx9LY6hMCeSiorKfebCzURfzaj69soAcyBYma4QiesStyCXbAVWWNMhI_MKcWW5G4loSKT94N0DhN5A'
   const requestType = storage.get(REQUEST_TYPE)
   // 如果 token 存在
   // 让每个请求携带自定义 token 请根据实际情况自行修改
