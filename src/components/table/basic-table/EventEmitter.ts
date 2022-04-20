@@ -14,7 +14,6 @@ export default class EventEmitter {
    * 表格初始化完成后执行
    */
   _tableInited() {
-    console.log('_tableInited')
     this.ctx.emit('_tableInited')
   }
 
@@ -22,7 +21,6 @@ export default class EventEmitter {
    * 表格销毁后执行
    */
   _tableUnload() {
-    console.log('_tableUnload')
     this.ctx.emit('_tableUnload')
   }
 
@@ -31,7 +29,6 @@ export default class EventEmitter {
    * @param 获取数据的service方法
    */
   _dataWillLoad(params: any) {
-    console.log('__dataWillLoad')
     this.ctx.emit('__dataWillLoad', params)
   }
 
@@ -40,7 +37,7 @@ export default class EventEmitter {
    * @param 将渲染的表格数据
    */
   _dataLoaded(data: any) {
-    console.log('_dataLoaded')
+    console.log(data)
     this.ctx.emit('_dataLoaded', data)
   }
 
@@ -48,7 +45,6 @@ export default class EventEmitter {
    * 清空数据后执行
    */
   _dataClear() {
-    console.log('_dataClear')
     this.ctx.emit('_dataClear')
   }
 }

@@ -13,7 +13,6 @@ export default defineComponent({
     },
   },
   setup(props: Record<string, any>, context) {
-    console.log('setup1')
     const _eventEmitter = new EventEmitter(context)
 
     const _tableOptions = ref(optionsHandler(props.options))
@@ -60,7 +59,12 @@ export default defineComponent({
 })
 </script>
 <template>
-  <a-table v-bind="_tableOptions" :data-source="data?.rows" :loading="loading"></a-table>
+  <a-table
+    v-bind="_tableOptions"
+    :data-source="data.tableData"
+    :pagination="data.pagination"
+    :loading="loading"
+  ></a-table>
 </template>
 
 <style scoped></style>

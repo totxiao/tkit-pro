@@ -3,7 +3,7 @@ import { Ref } from 'vue'
 import { useRequest } from 'vue-request'
 import request from '@/utils/request'
 import { TableOptions } from './table'
-// import { PAGER_CONFIG } from '../../../global-types'
+import { PAGER_CONFIG } from '../../../global-types'
 
 /**
  * 表格数据处理器
@@ -110,8 +110,30 @@ export default class DataHandler {
    * @returns tableData 返回直接提供给表格的数据
    */
   dataTranslation(data: any) {
-    return data
+    this.data = computed(() => {
+      const dataSource = {
+        tableData: data.value?.[PAGER_CONFIG.result],
+        pagination: {
+          current: data.value?.[PAGER_CONFIG.current],
+          pageSize: data.value?.[PAGER_CONFIG.pageSize],
+          total: data.value?.[PAGER_CONFIG.total],
+        },
+      }
+
+      if (data.value) {
+        // 抛出 data-loaded 事件
+        this.eventEmitter._dataLoaded(dataSource)
+      }
+
+      return dataSource
+    })
   }
+
+  //   const pagination = {
+  //   current: toRef(data, PAGER_CONFIG.current),
+  //   pageSize: toRef(data, PAGER_CONFIG.pageSize),
+  //   total: toRef(data, PAGER_CONFIG.total),
+  // }
 
   /**
    * 通过service获取数据
@@ -133,12 +155,10 @@ export default class DataHandler {
 
     try {
       const { data, loading, error } = useRequest(objectService)
-      this.data = this.dataTranslation(data)
+      this.dataTranslation(data)
+
       this.loading = loading
       this.error = error
-
-      // 抛出 data-loaded 事件
-      this.eventEmitter._dataLoaded(this.data?.value)
     } catch {
       console.error('表格数据获取失败,请检查service配置!')
     }

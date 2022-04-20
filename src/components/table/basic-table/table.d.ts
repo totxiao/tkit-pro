@@ -55,7 +55,6 @@ export interface PageConfig {
   current: string
   message: string
   pageSize: string
-  pageNumber: string
   total: string
 }
 
