@@ -58,12 +58,3 @@ export interface PageConfig {
   pageSize: string
   total: string
 }
-
-export interface PageData {
-  result: any[]
-  current: number
-  message: string
-  pageSize: number
-  pageNumber: number
-  total: number
-}

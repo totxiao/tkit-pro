@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { Ref, isProxy } from 'vue'
+import { Ref } from 'vue'
 import { TableOptions } from '@/components/table/basic-table/table'
 
 const options: Ref<TableOptions> = ref({
