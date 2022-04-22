@@ -8,6 +8,11 @@ export default class EventEmitter {
   ctx: SetupContext<Record<string, any>>
   constructor(context: SetupContext<Record<string, any>>) {
     this.ctx = context
+
+    onMounted(() => {
+      // 抛出 table-inited 事件
+      this._tableInited()
+    })
   }
 
   /**
@@ -15,6 +20,14 @@ export default class EventEmitter {
    */
   _tableInited() {
     this.ctx.emit('_tableInited')
+  }
+
+  /**
+   * @param changed 更改的值
+   * 表格变化时执行
+   */
+  _tableChanged(changed: { pagination: object; filters: any; sorter: any }) {
+    this.ctx.emit('_tableChanged', changed)
   }
 
   /**

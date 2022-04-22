@@ -1,9 +1,33 @@
+import { Method } from 'axios'
 import EventEmitter from './EventEmitter'
-import { Ref } from 'vue'
+import { Ref, isProxy } from 'vue'
 import { useRequest } from 'vue-request'
 import request from '@/utils/request'
 import { TableOptions } from './table'
 import { PAGER_CONFIG } from '../../../global-types'
+
+enum KEYOF_METHOD {
+  get = 1,
+  GET,
+  delete,
+  DELETE,
+  head,
+  HEAD,
+  options,
+  OPTIONS,
+  post,
+  POST,
+  put,
+  PUT,
+  patch,
+  PATCH,
+  purge,
+  PURGE,
+  link,
+  LINK,
+  unlink,
+  UNLINK,
+}
 
 /**
  * 表格数据处理器
@@ -13,18 +37,23 @@ export default class DataHandler {
   service: TableOptions['service']
   filters?: object
   eventEmitter: EventEmitter
-  objectService?: () => Promise<any>
+  objectService?: (P: any) => Promise<any>
+  run?: (P: object) => void
   loading: Ref<boolean> | undefined
   error?: Ref<Error | undefined>
+  custromDataTrans?: (data: any) => object
 
-  constructor(tableOptions: TableOptions, _eventEmitter: EventEmitter) {
+  constructor(tableOptions: TableOptions, eventEmitter: EventEmitter) {
     this.service = tableOptions.service
     this.filters = tableOptions.filters
+    this.custromDataTrans = tableOptions.custromDataTrans
 
-    this.eventEmitter = _eventEmitter
+    this.eventEmitter = eventEmitter
 
     // 用户主动传递数据则直接使用,否则调用接口
-    if (!this.data) {
+    if (tableOptions.data) {
+      this._dataTransmit(tableOptions.data)
+    } else {
       this.fetchData()
     }
   }
@@ -64,24 +93,67 @@ export default class DataHandler {
   }
 
   /**
+   * 通过service获取数据
+   * @returns void
+   */
+  fetchData(params?: any) {
+    if (!this.run) {
+      this._generateRun()
+    }
+
+    this.run?.(params)
+  }
+
+  /**
+   * 生成拉取数据方法
+   */
+  _generateRun() {
+    if (!this.objectService) {
+      this._generateService()
+    }
+
+    const { objectService } = this
+
+    if (objectService === undefined) return
+
+    //抛出 data-will-loading事件通知
+    this.eventEmitter._dataWillLoad(objectService)
+
+    try {
+      const { data, run, loading, error } = useRequest(objectService, {
+        manual: true,
+      })
+      this._dataTransmit(data)
+
+      this.run = run
+      this.loading = loading
+      this.error = error
+    } catch {
+      console.error('表格数据获取失败,请检查service配置!')
+    }
+  }
+
+  /**
    * service生成器
    * @param params 可能存在的参数
    * @returns 返回service请求的promise
    */
-  generateService(params?: any) {
+  _generateService() {
     if (!this.service) {
       console.error('请配置service!')
       return
     }
 
     let objectService
+
     if (typeof this.service === 'function') {
       // 函数类型直接使用用户传递的方法作为service
       objectService = this.service
     } else if (typeof this.service === 'string') {
       // 字符类型视为url数据组装service
-      objectService = () => {
-        const service: string = <string>this.service
+      const service: string = <string>this.service
+
+      objectService = (params: any) => {
         return request({
           url: service,
           method: 'get',
@@ -91,12 +163,21 @@ export default class DataHandler {
     } else {
       // 对象类型根据用户配置定义service
       const { service } = this
-      objectService = () => {
+
+      const method: Method = <Method>service.method
+
+      // 补充类型判断
+      if (!KEYOF_METHOD[method]) {
+        console.error(`不存在${method}请求方式, 请检查service配置!`)
+        return
+      }
+
+      objectService = (params: any) => {
         return request({
           url: service.url,
-          method: service.method,
+          method: method || 'get',
           headers: service.headers,
-          params: { ...service.params, params },
+          params: { ...service.params, ...params },
         })
       }
     }
@@ -105,22 +186,22 @@ export default class DataHandler {
   }
 
   /**
-   * 数据格式转换器
+   * 传递响应式数据
    * @param data 获取到的原始数据
-   * @returns tableData 返回直接提供给表格的数据
+   * @returns void 生成直接提供给表格的数据
    */
-  dataTranslation(data: any) {
-    this.data = computed(() => {
-      const dataSource = {
-        tableData: data.value?.[PAGER_CONFIG.result],
-        pagination: {
-          current: data.value?.[PAGER_CONFIG.current],
-          pageSize: data.value?.[PAGER_CONFIG.pageSize],
-          total: data.value?.[PAGER_CONFIG.total],
-        },
-      }
+  _dataTransmit(data: any) {
+    let transFunc: (data: any) => object | void = this._dataTransition
 
-      if (data.value) {
+    if (this.custromDataTrans) {
+      transFunc = this.custromDataTrans
+    }
+
+    this.data = computed(() => {
+      const dataSource = transFunc(data)
+
+      // 外部传入的相应式数据或生成了响应式数据
+      if (isProxy(data) || data.value) {
         // 抛出 data-loaded 事件
         this.eventEmitter._dataLoaded(dataSource)
       }
@@ -129,38 +210,29 @@ export default class DataHandler {
     })
   }
 
-  //   const pagination = {
-  //   current: toRef(data, PAGER_CONFIG.current),
-  //   pageSize: toRef(data, PAGER_CONFIG.pageSize),
-  //   total: toRef(data, PAGER_CONFIG.total),
-  // }
-
   /**
-   * 通过service获取数据
-   * @returns void
+   * 数据格式转换器
+   * @param data 获取到的原始数据
+   * @return translateData 转换之后的数据
    */
-  fetchData(params?: any) {
-    if (!this.objectService) {
-      this.generateService(params)
-    }
-
-    const { objectService } = this
-
-    if (objectService === undefined) {
-      return
-    }
-
-    //抛出 data-will-loading事件通知
-    this.eventEmitter._dataWillLoad(objectService)
-
-    try {
-      const { data, loading, error } = useRequest(objectService)
-      this.dataTranslation(data)
-
-      this.loading = loading
-      this.error = error
-    } catch {
-      console.error('表格数据获取失败,请检查service配置!')
+  _dataTransition(data: any) {
+    const proxyValue = data.value || data
+    if (Array.isArray(proxyValue)) {
+      return {
+        tableData: proxyValue,
+        pagination: {},
+      }
+    } else if (typeof proxyValue === 'object') {
+      return {
+        tableData: proxyValue?.[PAGER_CONFIG.result],
+        pagination: {
+          current: proxyValue?.[PAGER_CONFIG.current],
+          pageSize: proxyValue?.[PAGER_CONFIG.pageSize],
+          total: proxyValue?.[PAGER_CONFIG.total],
+        },
+      }
+    } else {
+      console.error('不支持的数据格式,请修改data数据格式!')
     }
   }
 }

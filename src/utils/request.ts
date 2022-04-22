@@ -49,7 +49,7 @@ const errorHandler = (error: any) => {
 request.interceptors.request.use((config: any) => {
   // const token = storage.get(ACCESS_TOKEN)
   const token =
-    'eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6Ijc2OTczMWVhLTQ1MTctNDg3Zi1hZjJmLWIxOTM2MGUzMTNiYiJ9.HYiQ-DHHx9LY6hMCeSiorKfebCzURfzaj69soAcyBYma4QiesStyCXbAVWWNMhI_MKcWW5G4loSKT94N0DhN5A'
+    'eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6Ijg3N2NmZjhlLTNlMDAtNGJkMS04Yzk5LTA4NWZkMmM0MTQyMSJ9.Ypkny-isSdFTjMmBVuePFKki4TQ19IuKhN0yZ5qaNAQLgCP3WcBQ0Lw5WLJIwDjmLR8XqyUIq5kM-arJPQgWWQ'
   const requestType = storage.get(REQUEST_TYPE)
   // 如果 token 存在
   // 让每个请求携带自定义 token 请根据实际情况自行修改

@@ -2,6 +2,7 @@
 import EventEmitter from './EventEmitter'
 import { optionsHandler } from './BasicTableShape'
 import DataHandler from './DataHandler'
+import { TableProps } from 'ant-design-vue/lib/table/interface'
 export default defineComponent({
   name: 'BasicTable',
   props: {
@@ -13,21 +14,32 @@ export default defineComponent({
     },
   },
   setup(props: Record<string, any>, context) {
-    const _eventEmitter = new EventEmitter(context)
+    const eventEmitter = new EventEmitter(context)
 
-    const _tableOptions = ref(optionsHandler(props.options))
+    const tableOptions = ref(optionsHandler(props.options))
 
-    let _dataHandler = new DataHandler(props.options, _eventEmitter)
+    let dataHandler = new DataHandler(props.options, eventEmitter)
 
-    onMounted(() => {
-      // 抛出 table-inited 事件
-      _eventEmitter._tableInited()
-    })
+    const handleTableChange: TableProps['onChange'] = (pagination, filters, sorter) => {
+      // 广播表格变化事件
+      eventEmitter._tableChanged({
+        pagination,
+        filters,
+        sorter,
+      })
+      // TODO:暂不确定filters与sorter的数据类型,后期完善
+      dataHandler.fetchData({
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+        ...filters,
+        ...sorter,
+      })
+    }
+
     watch(
       () => props.options,
       (newOptions) => {
-        _tableOptions.value = optionsHandler(newOptions)
-        _dataHandler = new DataHandler(props.options, _eventEmitter)
+        tableOptions.value = optionsHandler(newOptions)
       },
       {
         deep: true,
@@ -38,32 +50,34 @@ export default defineComponent({
 
     //暴露给外部的方法
     expose({
-      fetchData: _dataHandler.fetchData.bind(_dataHandler),
-      getTableData: _dataHandler.getTableData.bind(_dataHandler),
-      getTableLoading: _dataHandler.getTableLoading.bind(_dataHandler),
-      getTableError: _dataHandler.getTableError.bind(_dataHandler),
-      clearTable: _dataHandler.clearTable.bind(_dataHandler),
-      _tableOptions,
-      _dataHandler,
+      fetchData: dataHandler.fetchData.bind(dataHandler),
+      getTableData: dataHandler.getTableData.bind(dataHandler),
+      getTableLoading: dataHandler.getTableLoading.bind(dataHandler),
+      getTableError: dataHandler.getTableError.bind(dataHandler),
+      clearTable: dataHandler.clearTable.bind(dataHandler),
+      tableOptions,
+      dataHandler,
     })
 
-    const { data, loading } = _dataHandler
+    const { data, loading } = dataHandler
 
     return {
-      _tableOptions,
-      _dataHandler,
+      tableOptions,
+      dataHandler,
       data,
       loading,
+      handleTableChange,
     }
   },
 })
 </script>
 <template>
   <a-table
-    v-bind="_tableOptions"
     :data-source="data.tableData"
     :pagination="data.pagination"
     :loading="loading"
+    @change="handleTableChange"
+    v-bind="tableOptions"
   ></a-table>
 </template>
 

@@ -1,9 +1,13 @@
 <script setup lang="tsx">
-import { Ref } from 'vue'
+import { Ref, isProxy } from 'vue'
 import { TableOptions } from '@/components/table/basic-table/table'
+
 const options: Ref<TableOptions> = ref({
   rowKey: 'dictId',
-  service: '/api/system/dict/type/list',
+  service: {
+    url: '/api/system/dict/type/list',
+    method: 'get',
+  },
   columns: [
     {
       title: '字典名称',
@@ -29,24 +33,22 @@ const options: Ref<TableOptions> = ref({
     {
       title: '备注信息',
       key: 'remark',
-      render: ({ text }) => (text.length > 8 ? text.substring(0, 8) + '...' : text) || '',
     },
     {
       title: '状态',
       key: 'status',
-      render: ({ text }) => (text === '0' ? '使用' : '停用'),
-    },
-  ],
-  data: [
-    {
-      name: '林霄',
-      sex: '男',
-      age: '27',
-    },
-    {
-      name: '某某某',
-      sex: '女',
-      age: '24',
+      render: ({ text }) => {
+        return (
+          <div>
+            {text === '0' && <a-button type="primary">使用123</a-button>}
+            {text === '1' && (
+              <a-button type="primary" danger>
+                停用
+              </a-button>
+            )}
+          </div>
+        )
+      },
     },
   ],
 })
@@ -54,12 +56,14 @@ const options: Ref<TableOptions> = ref({
 const table = ref()
 
 const refreshTable = () => {
-  table.value.fetchData()
+  options.value.columns[2].render = ({ text }) => (text === 0 ? '0' : '1')
 }
 </script>
 <template>
-  <a-button type="primary" @click="refreshTable">refreshTable</a-button>
-  <basic-table ref="table" :options="options"></basic-table>
+  <div>
+    <a-button type="primary" @click="refreshTable">refreshTable</a-button>
+    <basic-table ref="table" :options="options"></basic-table>
+  </div>
 </template>
 
 <style scoped></style>

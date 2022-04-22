@@ -1,4 +1,4 @@
-import { Method } from 'axios'
+// import { Method } from 'axios'
 import { Ref } from 'vue'
 import DataHandler from './DataHandler'
 
@@ -24,11 +24,12 @@ export interface TableOptions {
     | (() => Promise<any>)
     | {
         url: string
-        method: Method
+        method: string
         params?: Record<string, unknown>
         headers?: Record<string, string | number | boolean>
       }
   rowKey?: string
+  dataTransition?: (data: any) => object
   [key: string]: any
 }
 
