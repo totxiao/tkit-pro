@@ -6,7 +6,8 @@ declare module 'vue' {
   export interface GlobalComponents {
     AButton: typeof import('ant-design-vue/es')['Button']
     ATable: typeof import('ant-design-vue/es')['Table']
-    BasicTable: typeof import('./../src/components/table/basic-table/BasicTable.vue')['default']
+    BasicTable: typeof import('./../src/components/table/basic/BasicTable.vue')['default']
+    TableAction: typeof import('./../src/components/table/actions/TableAction.vue')['default']
   }
 }
 

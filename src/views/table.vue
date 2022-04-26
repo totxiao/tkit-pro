@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { Ref } from 'vue'
-import { TableOptions } from '@/components/table/basic-table/table'
+import { TableOptions } from '@/components/table/basic/table'
 
 const options: Ref<TableOptions> = ref({
   rowKey: 'dictId',
