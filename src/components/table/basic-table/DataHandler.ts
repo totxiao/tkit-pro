@@ -33,7 +33,8 @@ enum KEYOF_METHOD {
  * 表格数据处理器
  */
 export default class DataHandler {
-  data: any // 表格数据
+  data: any // 表格使用的最终数据
+  referData: any // 数据来源的引用
   service: TableOptions['service']
   filters?: object
   eventEmitter: EventEmitter
@@ -52,6 +53,7 @@ export default class DataHandler {
 
     // 用户主动传递数据则直接使用,否则调用接口
     if (tableOptions.data) {
+      this.referData = tableOptions.data
       this._dataTransmit(tableOptions.data)
     } else {
       this.fetchData()
@@ -86,9 +88,10 @@ export default class DataHandler {
    * 清空表格数据
    */
   clearTable() {
-    this.data = undefined
-    this.loading = undefined
-    this.error = undefined
+    if (this.referData) {
+      this.referData.value = {}
+    }
+
     this.eventEmitter._dataClear()
   }
 
@@ -123,6 +126,8 @@ export default class DataHandler {
       const { data, run, loading, error } = useRequest(objectService, {
         manual: true,
       })
+      // 保存原始数据的引用
+      this.referData = data
       this._dataTransmit(data)
 
       this.run = run

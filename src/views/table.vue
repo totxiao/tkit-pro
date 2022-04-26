@@ -56,7 +56,7 @@ const options: Ref<TableOptions> = ref({
 const table = ref()
 
 const refreshTable = () => {
-  options.value.columns[2].render = ({ text }) => (text === 0 ? '0' : '1')
+  table.value.fetchData()
 }
 </script>
 <template>
