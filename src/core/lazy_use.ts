@@ -46,6 +46,8 @@ import {
   notification,
 } from 'ant-design-vue'
 
+import { TableAction } from '@/components/index'
+
 export default function lazy_use(app: App<Element>): void {
   app.use(ConfigProvider)
   app.use(Layout)
@@ -95,6 +97,8 @@ export default function lazy_use(app: App<Element>): void {
   app.config.globalProperties.$success = Modal.success
   app.config.globalProperties.$error = Modal.error
   app.config.globalProperties.$warning = Modal.warning
+
+  app.component(TableAction.name, TableAction)
 }
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] NOTICE: Antd use lazy-load.')

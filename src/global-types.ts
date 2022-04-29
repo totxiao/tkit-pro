@@ -1,4 +1,4 @@
-import { PageConfig } from './components/table/basic-table/table'
+import { PageConfig } from './components/table/basic/table'
 
 export const ACCESS_TOKEN = 'Access-Token'
 export const REQUEST_TYPE = 'request_type'

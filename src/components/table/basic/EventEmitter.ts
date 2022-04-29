@@ -50,7 +50,6 @@ export default class EventEmitter {
    * @param 将渲染的表格数据
    */
   _dataLoaded(data: any) {
-    console.log(data)
     this.ctx.emit('_dataLoaded', data)
   }
 

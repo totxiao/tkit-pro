@@ -41,5 +41,6 @@ module.exports = {
     '@typescript-eslint/no-empty-function': ['off'],
     // 关闭未定义报错 ,否则eslint会报全局的类型声明未定义的错误
     'no-undef': 'off',
+    'vue/no-dupe-keys': ['off'],
   },
 }

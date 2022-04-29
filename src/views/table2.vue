@@ -40,15 +40,35 @@ const options: Ref<TableOptions> = ref({
       render: ({ text }) => {
         return (
           <div>
-            {text === '0' && <a-button type="primary">使用123</a-button>}
-            {text === '1' && (
-              <a-button type="primary" danger>
-                停用
-              </a-button>
-            )}
+            {text === '0' && '使用'}
+            {text === '1' && '停用'}
           </div>
         )
       },
+    },
+    {
+      title: '操作',
+      key: 'operate',
+      render: () => (
+        <table-action
+          type="text"
+          actions={[
+            { title: '查看', icon: 'VideoCameraOutlined', type: 'primary', danger: true },
+            { title: '查看1', icon: 'VideoCameraOutlined', type: 'primary', danger: true },
+            { title: '查看2', icon: 'VideoCameraOutlined', type: 'primary', danger: true },
+            { title: '查看3', icon: 'VideoCameraOutlined', type: 'primary', danger: true },
+            {
+              title: '编辑',
+              icon: 'VideoCameraOutlined',
+              type: 'primary',
+              danger: false,
+              render: () => {
+                return <a-button>render</a-button>
+              },
+            },
+          ]}
+        />
+      ),
     },
   ],
 })
@@ -61,7 +81,6 @@ const refreshTable = () => {
 </script>
 <template>
   <div>
-    <a-button type="primary" @click="refreshTable">refreshTable</a-button>
     <basic-table ref="table" :options="options"></basic-table>
   </div>
 </template>
