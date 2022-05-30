@@ -1,4 +1,3 @@
-// import { Method } from 'axios'
 import { Ref } from 'vue'
 import DataHandler from './DataHandler'
 

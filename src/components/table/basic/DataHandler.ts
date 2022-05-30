@@ -3,7 +3,7 @@ import EventEmitter from './EventEmitter'
 import { Ref, isProxy } from 'vue'
 import { useRequest } from 'vue-request'
 import request from '@/utils/request'
-import { TableOptions } from './table'
+import { TableColumn, TableOptions } from './table'
 import { PAGER_CONFIG } from '../../../global-types'
 
 enum KEYOF_METHOD {
@@ -27,6 +27,8 @@ enum KEYOF_METHOD {
   LINK,
   unlink,
   UNLINK,
+  mock,
+  MOCK,
 }
 
 /**
@@ -36,6 +38,7 @@ export default class DataHandler {
   data: any // 表格使用的最终数据
   referData: any // 数据来源的引用
   service: TableOptions['service']
+  columns: TableColumn[]
   filters?: object
   eventEmitter: EventEmitter
   objectService?: (P: any) => Promise<any>
@@ -47,6 +50,7 @@ export default class DataHandler {
   constructor(tableOptions: TableOptions, eventEmitter: EventEmitter) {
     this.service = tableOptions.service
     this.filters = tableOptions.filters
+    this.columns = tableOptions.columns
     this.custromDataTrans = tableOptions.custromDataTrans
 
     this.eventEmitter = eventEmitter
@@ -183,6 +187,10 @@ export default class DataHandler {
           method: method || 'get',
           headers: service.headers,
           params: { ...service.params, ...params },
+          mockParams: {
+            type: 'table',
+            template: this.columns,
+          },
         })
       }
     }

@@ -6,7 +6,7 @@ const options: Ref<TableOptions> = ref({
   rowKey: 'dictId',
   service: {
     url: '/api/system/dict/type/list',
-    method: 'get',
+    method: 'mock',
   },
   columns: [
     {

@@ -6,6 +6,8 @@ import { VueAxios } from './axios'
 import { ACCESS_TOKEN, REQUEST_TYPE } from '@/global-types'
 import { message } from 'ant-design-vue'
 import { App } from 'vue'
+import { PAGER_CONFIG } from '../global-types'
+import Mock from 'mockjs'
 
 // 创建 axios 实例
 const request = axios.create({
@@ -47,9 +49,7 @@ const errorHandler = (error: any) => {
 
 // request interceptor
 request.interceptors.request.use((config: any) => {
-  // const token = storage.get(ACCESS_TOKEN)
-  const token =
-    'eyJhbGciOiJIUzUxMiJ9.eyJsb2dpbl91c2VyX2tleSI6ImJlNGExOWQ4LTNlZWItNGVmZi1hZTAyLWJkNzkyNzQ0NzkwZiJ9.rAzDDi35deDEPLhtec1N0xTyw0L7k1lQFedaS_ew9buhwZSBKXJ_rm2135j5Uasnhwlo6HjxCfpPRLf5TYj76Q'
+  const token = storage.get(ACCESS_TOKEN)
   const requestType = storage.get(REQUEST_TYPE)
   // 如果 token 存在
   // 让每个请求携带自定义 token 请根据实际情况自行修改
@@ -81,13 +81,53 @@ request.interceptors.response.use((response) => {
   return response.data
 }, errorHandler)
 
+const _generateMock = (params: any) => {
+  const mockParams = params?.mockParams
+  if (!mockParams) throw new Error('mock数据缺少必须的参数!')
+
+  let mockTemp: any
+  if (mockParams.type === 'table') {
+    mockTemp = {
+      [`${PAGER_CONFIG.result}|10`]: [
+        {
+          'id|+1': 0,
+          ...mockParams.template.reduce((acc: any, col: any) => {
+            acc[col.key] = /[\w]{3,10}/
+            return acc
+          }, {}),
+        },
+      ],
+      [`${PAGER_CONFIG.current}`]: 1,
+      [`${PAGER_CONFIG.pageSize}`]: 10,
+      [`${PAGER_CONFIG.total}`]: 10,
+    }
+  } else {
+    mockTemp = mockParams.reg
+  }
+
+  return Mock.mock(mockTemp)
+}
+
+// request mock包装
+function requestEnhance(params: any) {
+  if (params?.method === 'mock' || params?.method === 'MOCK') {
+    const a = new Promise((resolve) => {
+      const data = _generateMock(params)
+      resolve(data)
+    })
+    return a
+  } else {
+    return request(params)
+  }
+}
+
 const installer = {
   vm: {},
   install(Vue: App) {
-    Vue.use(VueAxios, request)
+    Vue.use(VueAxios, requestEnhance)
   },
 }
 
-export default request
+export default requestEnhance
 
-export { installer as VueAxios, request as axios }
+export { installer as VueAxios, requestEnhance as axios }

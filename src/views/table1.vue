@@ -3,10 +3,10 @@ import { Ref } from 'vue'
 import { TableOptions } from '@/components/table/basic/table'
 
 const options: Ref<TableOptions> = ref({
-  rowKey: 'dictId',
+  rowKey: 'id',
   service: {
     url: '/api/system/dict/type/list',
-    method: 'get',
+    method: 'mock',
   },
   columns: [
     {
@@ -37,11 +37,11 @@ const options: Ref<TableOptions> = ref({
     {
       title: '状态',
       key: 'status',
-      render: ({ text }) => {
+      render: ({ index }) => {
         return (
           <div>
-            {text === '0' && <a-button type="primary">使用</a-button>}
-            {text === '1' && (
+            {index % 2 === 0 && <a-button type="primary">使用</a-button>}
+            {index % 2 !== 0 && (
               <a-button type="primary" danger>
                 停用
               </a-button>
