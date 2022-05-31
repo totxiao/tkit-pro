@@ -1,9 +1,16 @@
 import { Action, ActionType } from './actions'
 import * as Icons from '@ant-design/icons-vue'
-import { h } from 'vue'
+import { h, ToRef } from 'vue'
+import './TableAction.less'
 
 const Icon = (props: { icon: string }) => {
   return h(Icons[props.icon as keyof typeof Icons])
+}
+
+const DEFAULT_ICON = {
+  view: 'EyeOutlined',
+  edit: 'EditOutlined',
+  delete: 'ClearOutlined',
 }
 
 export default {
@@ -20,52 +27,104 @@ export default {
     },
   },
   setup(props: Record<string, any>) {
-    const actions: Action[] = props.actions
-    const type: ActionType = props.type
+    const actions: ToRef<Action[]> = toRef(props, 'actions')
+    const type: ToRef<ActionType> = toRef(props, 'type')
 
-    const itemRenderer = (action: Action, type: ActionType) => {
+    const analysisIcon = (icon: string | undefined) => {
+      let actIcon: string | undefined
+      if (icon) {
+        Object.entries(DEFAULT_ICON).forEach(([key, val]) => {
+          if (icon === key) {
+            actIcon = val
+          }
+        })
+        if (!icon) {
+          actIcon = icon
+        }
+      }
+
+      return actIcon
+    }
+
+    const iconRenderer = (action: Action) => {
       return (
         <a-tooltip
           v-slots={{
             title: () => action.title,
           }}
         >
-          {action.render && action.render()}
-          {!action.render && type === 'icon' && (
-            <a-button
-              key={action.title}
-              type={action.type}
-              danger={action.danger}
-              disabled={action.danger}
-              onClick={action.onClick}
-              v-slots={{
-                icon: () => <Icon icon={action.icon || 'EditOutlined'} />,
-              }}
-            ></a-button>
+          <a-button
+            key={action.title}
+            type={action.type}
+            danger={action.danger}
+            disabled={action.disabled}
+            onClick={action.click}
+            v-slots={{
+              icon: () => <Icon icon={analysisIcon(action.icon) || 'EyeOutlined'} />,
+            }}
+          ></a-button>
+        </a-tooltip>
+      )
+    }
+
+    const textRenderer = (action: Action) => {
+      return (
+        <a-tooltip
+          v-slots={{
+            title: () => action.title,
+          }}
+        >
+          {!action.disabled && (
+            <a class="action-text" onClick={action.click} key={action.title}>
+              {action.title}
+            </a>
           )}
-          {!action.render && type === 'text' && <a-menu-item key={action.title}>{action.title}</a-menu-item>}
+          {action.disabled && (
+            <a class="action-text disabled" key={action.title}>
+              {action.title}
+            </a>
+          )}
+        </a-tooltip>
+      )
+    }
+
+    const menuRenderer = (action: Action) => {
+      return (
+        <a-tooltip
+          v-slots={{
+            title: () => action.title,
+          }}
+        >
+          <a-menu-item disabled={action.disabled} onClick={action.click} key={action.title}>
+            <div class="action-menu">
+              {action.icon && <Icon icon={analysisIcon(action.icon) || 'EyeOutlined'} />}
+              {action.render && action.render()}
+              {!action.render && <a style={{ padding: '0 5px' }}>{action.title}</a>}
+            </div>
+          </a-menu-item>
         </a-tooltip>
       )
     }
 
     const textRender = (actions: Action[]) => {
-      console.log(actions.length)
-      if (actions.length <= 3) {
-        return actions.map((action) => itemRenderer(action, 'icon'))
+      if (actions.length <= 4) {
+        return actions.map((action) => textRenderer(action))
       } else {
-        const restActions = actions.slice(2)
-        console.log(restActions)
+        const restActions = actions.slice(3)
         return (
           <>
-            {itemRenderer(actions[0], 'icon')}
-            {itemRenderer(actions[1], 'icon')}
+            {textRenderer(actions[0])}
+            {textRenderer(actions[1])}
+            {textRenderer(actions[2])}
             {
               <a-dropdown
                 v-slots={{
-                  overlay: () => <a-menu>{restActions.map((action) => itemRenderer(action, 'text'))}</a-menu>,
+                  overlay: () => <a-menu>{restActions.map((action) => menuRenderer(action))}</a-menu>,
                 }}
               >
-                <a-button>Actions</a-button>
+                <div class="action-rest">
+                  <Icon icon={'EllipsisOutlined'} />
+                </div>
               </a-dropdown>
             }
           </>
@@ -73,19 +132,19 @@ export default {
       }
     }
 
-    console.log(type)
-
-    return () => (
-      <div>
-        {type === 'icon' && (
-          <a-button-group>
-            {actions.map((action) => {
-              return itemRenderer(action, 'icon')
-            })}
-          </a-button-group>
-        )}
-        {type === 'text' && textRender(actions)}
-      </div>
-    )
+    return () => {
+      return (
+        <div class="action-box">
+          {type.value === 'icon' && (
+            <a-button-group>
+              {actions.value.map((action: any) => {
+                return iconRenderer(action)
+              })}
+            </a-button-group>
+          )}
+          {type.value === 'text' && textRender(actions.value)}
+        </div>
+      )
+    }
   },
 }

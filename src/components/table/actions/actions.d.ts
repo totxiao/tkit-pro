@@ -5,10 +5,10 @@ export interface Action {
   icon?: string
   type?: 'primary' | 'default' | 'dashed' | 'link'
   danger?: boolean
-  disable?: boolean
+  disabled?: boolean
   popupConfirm?: boolean
-  onClick?: () => void
+  click?: () => void
   render?: () => JSX.Element | string
 }
 
-export type ActionType = 'icon' | 'text'
+export type ActionType = 'icon' | 'text' | 'menu'

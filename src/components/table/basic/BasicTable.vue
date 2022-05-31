@@ -32,6 +32,7 @@ export default defineComponent({
     },
   },
   setup(props: Record<string, any>, context) {
+    console.log(props.options)
     /**
      * @param columns table 的columns 属性
      * @returns columns 将返回 columns处理后的columns

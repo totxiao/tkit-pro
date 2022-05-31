@@ -2,8 +2,6 @@
 import { Ref } from 'vue'
 import { TableOptions } from '@/components/table/basic/table'
 
-let type = ref('icon')
-
 const options: Ref<TableOptions> = ref({
   rowKey: 'id',
   service: {
@@ -59,60 +57,13 @@ const options: Ref<TableOptions> = ref({
         )
       },
     },
-    {
-      title: '操作',
-      key: 'operate',
-      render: ({ record }) => {
-        const actions = [
-          {
-            title: '查看',
-            icon: 'view',
-            type: 'primary',
-            click: () => {
-              type.value === 'icon' ? (type.value = 'text') : (type.value = 'icon')
-            },
-            danger: false,
-            disabled: !record.disabled,
-          },
-          {
-            title: '编辑',
-            icon: 'edit',
-            type: 'primary',
-            danger: true,
-            disabled: !record.disabled,
-          },
-          {
-            title: '删除',
-            icon: 'delete',
-            type: 'primary',
-            danger: true,
-            disabled: !record.disabled,
-          },
-          {
-            title: '测试1',
-            icon: 'VideoCameraOutlined',
-            type: 'primary',
-            danger: true,
-            disabled: !record.disabled,
-          },
-          {
-            title: '测试2',
-            render: () => {
-              return <a>render</a>
-            },
-          },
-        ]
-        return <table-action type={type.value} actions={actions} />
-      },
-    },
   ],
+  actions: ['create', 'edit', 'update', 'delete'],
 })
-
-const table = ref()
 </script>
 <template>
   <div>
-    <basic-table ref="table" :options="options"></basic-table>
+    <crud-table :options="options"></crud-table>
   </div>
 </template>
 

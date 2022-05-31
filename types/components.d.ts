@@ -7,6 +7,8 @@ declare module 'vue' {
     AButton: typeof import('ant-design-vue/es')['Button']
     ATable: typeof import('ant-design-vue/es')['Table']
     BasicTable: typeof import('./../src/components/table/basic/BasicTable.vue')['default']
+    CrudTable: typeof import('./../src/components/table/crud/crud-table.vue')['default']
+    CRUDTable: typeof import('./../src/components/table/crud/CRUDTable.vue')['default']
   }
 }
 
