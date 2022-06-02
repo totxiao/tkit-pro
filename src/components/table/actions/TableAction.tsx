@@ -1,15 +1,11 @@
 import { Action, ActionType } from './actions'
-import * as Icons from '@ant-design/icons-vue'
-import { h, ToRef } from 'vue'
+import { ToRef } from 'vue'
+import Icon from '../../icon'
 import './TableAction.less'
-
-const Icon = (props: { icon: string }) => {
-  return h(Icons[props.icon as keyof typeof Icons])
-}
 
 const DEFAULT_ICON = {
   view: 'EyeOutlined',
-  edit: 'EditOutlined',
+  update: 'EditOutlined',
   delete: 'ClearOutlined',
 }
 

@@ -1,4 +1,4 @@
-// export type PresetAction = 'view' | 'edit' | 'delete'
+export type PresetAction = 'create' | 'view' | 'update' | 'delete'
 
 export interface Action {
   title: string

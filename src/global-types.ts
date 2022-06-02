@@ -12,3 +12,9 @@ export const PAGER_CONFIG: PageConfig = {
   pageSize: 'pageSize',
   total: 'total',
 }
+
+export const API_CONFIG = {
+  add: 'add',
+  update: 'update',
+  delete: 'delete',
+}

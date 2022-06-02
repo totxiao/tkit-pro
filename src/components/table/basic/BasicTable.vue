@@ -32,7 +32,6 @@ export default defineComponent({
     },
   },
   setup(props: Record<string, any>, context) {
-    console.log(props.options)
     /**
      * @param columns table 的columns 属性
      * @returns columns 将返回 columns处理后的columns
@@ -130,11 +129,13 @@ export default defineComponent({
 })
 </script>
 <template>
-  <a-table
-    :data-source="data.tableData"
-    :pagination="data.pagination"
-    :loading="loading"
-    @change="handleTableChange"
-    v-bind="tableOptions"
-  ></a-table>
+  <div class="basic-table">
+    <a-table
+      :data-source="data.tableData"
+      :pagination="data.pagination"
+      :loading="loading"
+      @change="handleTableChange"
+      v-bind="tableOptions"
+    ></a-table>
+  </div>
 </template>
